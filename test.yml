@@ -1,0 +1,9 @@
+---
+  - name: test
+    hosts: rpis
+    tasks:
+      - name: Check for nano
+        apt:
+          name: nano
+          state: latest
+        become: yes
