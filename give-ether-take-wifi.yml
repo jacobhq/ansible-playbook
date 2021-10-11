@@ -1,0 +1,10 @@
+---
+  - name: Raspberry pi 4 take in wifi give ethernet over RJ-45
+    hosts: rpis
+    tasks:
+      - name: Install packages
+        apt:
+          name: dnsmasq
+          state: latest
+        become: yes
+      - name: 
