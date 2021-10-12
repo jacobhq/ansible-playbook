@@ -8,10 +8,7 @@
           state: latest
         become: yes
       - name: Configure eth0
-        curl:
-          src: https://raw.githubusercontent.com/jacobhq/ansible-playbooks/main/give-ether-take-wifi/interfaces
-          dest: /etc/network/interfaces
-          state: present
+        command: curl https://raw.githubusercontent.com/jacobhq/ansible-playbooks/main/give-ether-take-wifi/interfaces -o /etc/network/interfaces
         become: yes
       - name: Iptables flush
         command: iptables -F
