@@ -7,4 +7,9 @@
           name: dnsmasq
           state: latest
         become: yes
-      - name: 
+      - name: Configure eth0
+        curl:
+          src: https://raw.githubusercontent.com/jacobhq/ansible-playbooks/main/give-ether-take-wifi/interfaces
+          dest: /etc/network/interfaces
+          state: present
+        become: yes

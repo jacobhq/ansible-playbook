@@ -1,0 +1,12 @@
+# interfaces(5) file used by ifup(8) and ifdown(8)
+# Better use netplan.io or systemd-networkd to configure additional interface stanzas.
+
+# Include files from /etc/network/interfaces.d:
+source-directory /etc/network/interfaces.d
+
+allow-hotplug eth0
+iface eth0 inet status
+        address 192.168.8.1
+        netmask 255.255.255.0
+        network 192.168.8.0
+        broadcast 192.168.8.255
