@@ -13,3 +13,46 @@
           dest: /etc/network/interfaces
           state: present
         become: yes
+      - name: Iptables flush
+        command: iptables -F
+        become: yes
+      - name: Iptables flush nat
+        command: iptables -t nat -F
+        become: yes
+      - name: Iptables POSTROUTING
+        command: iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+        become: yes
+      - name: Iptables FORWARD
+        command: iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+        become: yes
+      - name: Iptables FORWARD and ACCEPT
+        command: sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
+        become: yes
+      - name: Add 1 to /proc/sys/net/ipv4/ip_forward
+        echo:
+          path: /proc/sys/net/ipv4/ip_forward
+          value: 1
+          become: yes
+      - name: Add to /etc/sysctl.conf
+        echo:
+          path: /etc/sysctl.conf
+          value: net.ipv4.ip_forward=1
+          become: yes
+      - name: Set up ip routing [1/4]
+        command: ip route del 0/0 dev eth0 &> /dev/null
+        become: yes
+      - name: Set up ip routing [2/4]
+        command: a=`route | awk "/${wlan}/"'{print $5+1;exit}'`
+      - name: Set up ip routing [3/4]
+        command: route add -net default gw 192.168.8.1 netmask 0.0.0.0 dev eth0 metric $a
+        become: yes
+      - name: Append new line to /etc/dnsmasq.conf
+        command: echo "" >> /etc/dnsmasq.conf
+        become: yes
+      - name: Set up ip routing [4/4]
+        command: curl -s https://raw.githubusercontent.com/jacobhq/ansible-playbooks/main/give-ether-take-wifi/dnsmasq.conf >> /etc/dnsmasq.conf
+      - name: Restart dnsmasq
+        service:
+          name: dnsmasq
+          state: restarted
+        become: yes
